@@ -8,8 +8,8 @@ const Header = () => {
     <li className='font-semibold'><Link to='/'>Home</Link></li>
     <li className='font-semibold'><Link to='/'>About</Link></li>
     <li className='font-semibold'><Link to='/'>Blog</Link></li>
-    <li className='font-semibold'><Link to='/'>Service</Link></li>
     <li className='font-semibold'><Link to='/'>Contact</Link></li>
+    <li className='font-semibold'><Link to='/login'>Login</Link></li>
     </>
     return (
         <div className="navbar h-20 mb-12 pt-12 bg-base-100 min max-w-screen-xl mx-auto">
