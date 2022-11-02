@@ -1,15 +1,31 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../../../assets/logo.svg';
+import { AuthContext } from '../../../contexts/AuthProvider/AuthProvider';
 
 const Header = () => {
+    const { user, logOut } = useContext(AuthContext);
+
+    const handleLogOut = () => {
+        logOut()
+            .then(() => { })
+            .catch(err => console.error(err))
+    }
 
     const menuItems = <>
-    <li className='font-semibold'><Link to='/'>Home</Link></li>
-    <li className='font-semibold'><Link to='/'>About</Link></li>
-    <li className='font-semibold'><Link to='/'>Blog</Link></li>
-    <li className='font-semibold'><Link to='/'>Contact</Link></li>
-    <li className='font-semibold'><Link to='/login'>Login</Link></li>
+        <li className='font-semibold'><Link to='/'>Home</Link></li>
+        <li className='font-semibold'><Link to='/'>About</Link></li>
+        <li className='font-semibold'><Link to='/'>Blog</Link></li>
+        <li className='font-semibold'><Link to='/'>Contact</Link></li>
+        {
+            user ?
+                <>
+                    <li className='font-semibold'><Link to='/orders'>Orders</Link></li>
+                    <li className='font-semibold'><button onClick={handleLogOut}>Logout</button></li>
+                </>
+                :
+                <li className='font-semibold'><Link to='/login'>Login</Link></li>
+        }
     </>
     return (
         <div className="navbar h-20 mb-12 pt-12 bg-base-100 min max-w-screen-xl mx-auto">
@@ -33,6 +49,10 @@ const Header = () => {
             </div>
             <div className="navbar-end">
                 <button className="btn btn-outline btn-warning">Appointment</button>
+                {
+                    user && <button className="ml-4">{user?.email}</button>
+                }
+
             </div>
         </div>
     );

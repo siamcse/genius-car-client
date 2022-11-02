@@ -1,10 +1,25 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import img from '../../assets/images/login/login.svg';
+import { AuthContext } from '../../contexts/AuthProvider/AuthProvider';
 
 const Login = () => {
-    const handleLogin = event =>{
+    const { signIn } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    const handleLogin = event => {
         event.preventDefault();
+
+        const form = event.target;
+        const email = form.email.value;
+        const password = form.password.value;
+
+        signIn(email, password)
+            .then(result => {
+                console.log(result.user);
+                navigate('/');
+            })
+            .catch(err => console.error(err))
     }
     return (
         <div className="hero">
@@ -27,7 +42,7 @@ const Login = () => {
                             </label>
                             <input type="text" name='password' placeholder="Your password" className="input input-bordered" required />
                             <label className="label">
-                                <a href="#" className="label-text-alt link link-hover">Forgot password?</a>
+                                <button className="label-text-alt link link-hover">Forgot password?</button>
                             </label>
                         </div>
                         <div className="form-control mt-6">
