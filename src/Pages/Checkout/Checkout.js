@@ -25,22 +25,23 @@ const Checkout = () => {
             message
         }
 
-        fetch('http://localhost:5000/orders',{
+        fetch('https://genius-car-server-one.vercel.app/orders', {
             method: 'POST',
-            headers:{
-                'content-type': 'application/json'
+            headers: {
+                'content-type': 'application/json',
+                authorization: `Bearer ${localStorage.getItem('genius-token')}`
             },
             body: JSON.stringify(order)
         })
-        .then(res=>res.json())
-        .then(data=>{
-            console.log(data);
-            if (data.acknowledged){
-                alert('Order place successfully.');
-                form.reset();
-            }
-        })
-        .catch(err=>console.log(err))
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                if (data.acknowledged) {
+                    alert('Order place successfully.');
+                    form.reset();
+                }
+            })
+            .catch(err => console.log(err))
     }
     return (
         <div className='max-w-screen-xl mx-auto my-12'>
@@ -50,7 +51,7 @@ const Checkout = () => {
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                     <input name='firstname' type="text" placeholder="First Name" className="input input-bordered w-full " />
                     <input name='lastname' type="text" placeholder="Last Name" className="input input-bordered w-full " />
-                    <input name='phone' type="text" placeholder="Your Phone" className="input input-bordered w-full " required/>
+                    <input name='phone' type="text" placeholder="Your Phone" className="input input-bordered w-full " required />
                     <input name='email' type="text" placeholder="Your Email" defaultValue={user?.email} className="input input-bordered w-full " readOnly />
                 </div>
                 <textarea name='message' className="textarea textarea-bordered h-24 w-full mt-6" placeholder="Your Message"></textarea>

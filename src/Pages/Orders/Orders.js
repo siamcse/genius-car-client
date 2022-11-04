@@ -3,52 +3,67 @@ import { AuthContext } from '../../contexts/AuthProvider/AuthProvider';
 import OrdersRow from './OrdersRow';
 
 const Orders = () => {
-    const { user } = useContext(AuthContext);
+    const { user, logOut } = useContext(AuthContext);
     const [orders, setOrders] = useState([]);
 
     useEffect(() => {
-        fetch(`http://localhost:5000/orders?email=${user.email}`)
-            .then(res => res.json())
-            .then(data => setOrders(data))
-    }, [user?.email])
+        fetch(`https://genius-car-server-one.vercel.app/orders?email=${user.email}`, {
+            headers: {
+                authorization: `Bearer ${localStorage.getItem('genius-token')}`
+            }
+        })
+            .then(res => {
+                if (res.status === 401 || res.status === 403) {
+                    return logOut();
+                }
+                return res.json()
+            })
+            .then(data => {
+                setOrders(data)
+            })
+    }, [user?.email, logOut])
 
     const handleDelete = id => {
         const agree = window.confirm("Are you sure to cancel this order?");
         if (agree) {
-            fetch(`http://localhost:5000/orders/${id}`, {
-                method: "DELETE"
+            fetch(`https://genius-car-server-one.vercel.app/orders/${id}`, {
+                method: "DELETE",
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem('genius-token')}`
+                }
             })
                 .then(res => res.json())
                 .then(data => {
                     if (data.deletedCount > 0) {
                         alert('Order cancel successfully.');
-                        const remaining = orders.filter(ordr=> ordr._id!== id);
+                        const remaining = orders.filter(ordr => ordr._id !== id);
                         setOrders(remaining);
                     }
                 })
         }
     }
 
-    const handleStatusUpdate = id=>{
-        fetch(`http://localhost:5000/orders/${id}`,{
+    const handleStatusUpdate = id => {
+        fetch(`https://genius-car-server-one.vercel.app/orders/${id}`, {
             method: 'PATCH',
-            headers:{
-                'content-type': 'application/json'
+            headers: {
+                'content-type': 'application/json',
+                authorization: `Bearer ${localStorage.getItem('genius-token')}`
             },
-            body: JSON.stringify({status: 'Approved'})
+            body: JSON.stringify({ status: 'Approved' })
         })
-        .then(res=>res.json())
-        .then(data=> {
-            console.log(data);
-            if (data.modifiedCount){
-                const remaining = orders.filter(ordr => ordr._id!==id);
-                const approved = orders.find(ordr=>ordr._id ===id);
-                approved.status= "Approved";
-                const newOrders = [approved,...remaining];
-                setOrders(newOrders);
-                alert('Your order is approved.')
-            }
-        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                if (data.modifiedCount) {
+                    const remaining = orders.filter(ordr => ordr._id !== id);
+                    const approved = orders.find(ordr => ordr._id === id);
+                    approved.status = "Approved";
+                    const newOrders = [approved, ...remaining];
+                    setOrders(newOrders);
+                    alert('Your order is approved.')
+                }
+            })
     }
     return (
         <div className='max-w-screen-xl mx-auto my-12'>
